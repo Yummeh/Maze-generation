@@ -99,22 +99,18 @@ class Maze {
     }
 
     drawMaze() {
-        // Find wall size and direction:
-        var gridPosX = this.posX;
-        var gridPosY = this.posY;
-
         // Wall width and height:
         var wallWidth = this.pxWidth / this.width;
         var wallHeight = this.pxHeight /  this.height;
 
-        // Draw a line for each side of the cell if current cell and neighbour do not have eachother as available neighbours
+        // Draw a line for the side of the cell if where current cell and neighbour do not have eachother as available neighbours
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var neighbours = this.vertices.get(this.grid[x][y]);
                 for (var i = 0; i < 4; i++) {   // For loop to 4 because max 4 neighbours
                     if (neighbours[i] != undefined) {
-                        var cellPosX = gridPosX + x * wallWidth;
-                        var cellPosY = gridPosY + y * wallHeight;
+                        var cellPosX = this.posX + x * wallWidth;
+                        var cellPosY = this.posY + y * wallHeight;
 
                         // Just to make sure lines dont get drawn twice
                         var neighboursNeighbours = this.vertices.get(neighbours[i]);
