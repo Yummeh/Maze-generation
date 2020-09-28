@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link rel="stylesheet" href="CSS/style.css">
         <meta charset="utf-8">
         <title>Maze generator</title>
     </head>
     <body>
         <div class="page-container">
-            <canvas id="canvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
-                Your browser does not support the HTML5 canvas tag.
-            </canvas>
+            <div class="myContainer text-center">
+                <h3>Current algorithm: Recursive breadth first search</h3>
+                <p>Random paragraph</p>
+                <canvas class="d-flex justify-content-center" id="canvas" width="300" height="300" style="border:1px solid #d3d3d3;">
+                    Your browser does not support the HTML5 canvas tag.
+                </canvas>
+                <br>
+
+                <form class="d-flex justify-content-center">
+                    <label for="width">Width</label>
+                    <input type="range" id="width" name="width" min="0" max="100" value="20">
+                    <input type="text" id="widthInput" name="widthInput" value="20">
+                    <label for="height">Height</label>
+                    <input type="range" id="height" name="height" min="0" max="100" value="20">
+                    <input type="text" id="heightInput" name="heightInput" value="20"><br>
+                    <label for="seed">Seed: </label>
+                    <input type="text" id="seed" name="seed">
+                </form>
+                <p class="generatemMaze brn btn-primary" id="generateMaze">Generate</p>
+            </div>
         </div>
+
+
         <script src=https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js></script>
         <script src="JS/maze.js"></script>
 
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="JS/jqueryFunctions.js"></script>
     </body>
 </html>

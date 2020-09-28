@@ -199,13 +199,16 @@ class DepthFirstMaze extends Maze {
     }
 }
 
-main = function() {
+function generateMaze() {
+    console.log("called");
     var c = document.querySelector('canvas');
     var ctx = c.getContext("2d");
 
-    const maze = new DepthFirstMaze(0, 0, 500, 500, 5, 5, c, ctx);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const maze = new DepthFirstMaze(0, 0, c.width, c.height, 10, 10, c, ctx);
     maze.generateMaze(0, 0);
     maze.drawMaze();
 }
 
-main();
+generateMaze();

@@ -1,0 +1,16 @@
+h3 {
+    color: black;
+    align-self: center;
+}
+
+#canvas {
+    margin: 0 auto;
+}
+
+.generateMaze {
+    width: 100px;
+}
+
+#myContainer {
+    width: 100;
+}
