@@ -1,3 +1,14 @@
+/**
+ * @author Ralph de Horde <ralphdehorde@gmail.com>
+ * 
+ * This document is for the public domain.
+ * 
+ * Summary:
+ * This Javascript file generates a maze on a canvas.
+ * Link: https://en.wikipedia.org/wiki/Maze_generation_algorithm
+ */
+
+
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -12,36 +23,32 @@ function drawLine(ctx, x, y, x2, y2, color) {
     ctx.stroke();
 }
 
-function drawSquare(ctx, x, y, width, heigth, color) {
+function drawSquare(ctx, x, y, width, height, color) {
     ctx.strokeStyle = color;
-    ctx.strokeRect(x, y, width, heigth);
+    ctx.strokeRect(x, y, width, height);
 }
 
 function sleep(ms) {
     return new Promise(
       resolve => setTimeout(resolve, ms)
     );
-  }
+}
 
 class MazeNode {
     visited = false;
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
 }
 
 class Maze {
-
-    constructor(posX, posY, width, height, pxWidth, pxHeight) {
+    constructor(posX, posY, pxWidth, pxHeight, width, height, c, ctx) {
         this.posX = posX;
         this.posY = posY;
-        this.width = width;
-        this.height = height;
         this.pxWidth = pxWidth;
         this.pxHeight = pxHeight;
+        this.width = width;
+        this.height = height;
+        this.c = c;
+        this.ctx = ctx;
 
-        this.vertAmount = width * height;
         this.grid = [];
         this.vertices = new Map()
 
@@ -52,29 +59,12 @@ class Maze {
         this.vertices.set(v, []);
     }
 
-
     addEdge(a, b, posInArr) {
         this.vertices.get(a)[posInArr] = b;
     }
 
-    removeWall(a, b) {
-        var index = this.vertices.get(a).indexOf(b);
-        if (index > -1) {
-            this.vertices.get(a).splice(index, 1);
-        }
-
-        index = this.vertices.get(b).indexOf(a);
-        if (index > -1) {
-            this.vertices.get(b).splice(index, 1);
-        }
-    }
-
-    hasWall(a, b) {
-       
-    }
-
     generateGrid() {
-        // Generate nodes
+        // Initialize nodes
         for (var x = 0; x < this.width; x++) {
             this.grid[x] = [];
             for (var y = 0; y < this.height; y++) {
@@ -84,26 +74,21 @@ class Maze {
             }
         }
 
-        // Set neighbours
+        // Set node neighbours
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var node = this.grid[x][y];
-                var neighbour;
                 if (this.grid[x][y+1] != undefined) {
-                    neighbour = this.grid[x][y+1];
-                    this.addEdge(node, neighbour, 0);
+                    this.addEdge(node, this.grid[x][y+1], 0);
                 }
                 if (this.grid[x+1] != undefined) {
-                    neighbour = this.grid[x+1][y];
-                    this.addEdge(node, neighbour, 1);
+                    this.addEdge(node, this.grid[x+1][y], 1);
                 }
                 if (this.grid[x][y-1] != undefined) {
-                    neighbour = this.grid[x][y-1];
-                    this.addEdge(node, neighbour, 2);
+                    this.addEdge(node, this.grid[x][y-1], 2);
                 }
                 if (this.grid[x-1] != undefined) {
-                    neighbour = this.grid[x-1][y]
-                    this.addEdge(node, neighbour, 3);
+                    this.addEdge(node, this.grid[x-1][y], 3);
                 }
             }
         }
@@ -113,72 +98,64 @@ class Maze {
         throw new Error('You have to implement the method!');
     }
 
-    drawMaze(c, ctx) {
+    drawMaze() {
         // Find wall size and direction:
-        
-        var squarePosX = c.width / 10;
-        var squarePosY = c.height / 10;
-        var squareWidth = c.width - 2 * c.width / 10;
-        var squareHeight = c.height - 2 * c.height / 10;
-        var gridPosX = squarePosX;
-        var gridPosY = squarePosY;
+        var gridPosX = this.posX;
+        var gridPosY = this.posY;
 
-        // Wall width:
-        var wallWidth = squareWidth / this.width;
-        var wallHeight = squareHeight / this.height;
+        // Wall width and height:
+        var wallWidth = this.pxWidth / this.width;
+        var wallHeight = this.pxHeight /  this.height;
 
-        // Draw edges:
-        // Need egde position, need to know if vertical or horizontal base on 
-        // Draw all edges for each node / cell (so only the walls from the cell get drawn, down worry about optimalisation)
-        // North wall of a cell: x = nodePosX, y = nodePosY + wallHeight, x2 = ndoePosX + wallWidth, y2 = nodePosY + wallHeight
-        // East wall of a cell: x = nodeposX + wallWidth, y = nodePosY, x2 = nodePosX + width, y2 = nodePosY + heigth
-        // South wall of a cell: x = nodePosX, y = nodePosY, x2 = nodePosX + width, y2 = nodePosY
-        // West wall of a cell: x = nodePosX, y = nodePosY, x2 = nodePosX, y2 = nodePosY + height
-        // Check wether current node and neighbours NESW have a wall in common
-
+        // Draw a line for each side of the cell if current cell and neighbour do not have eachother as available neighbours
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                var node = this.grid[x][y]
-                var neighbours = this.vertices.get(node);
-                for (var i = 0; i < 4; i++) { // For loop to 4 because max 4 neighbours
+                var neighbours = this.vertices.get(this.grid[x][y]);
+                for (var i = 0; i < 4; i++) {   // For loop to 4 because max 4 neighbours
                     if (neighbours[i] != undefined) {
+                        var cellPosX = gridPosX + x * wallWidth;
+                        var cellPosY = gridPosY + y * wallHeight;
+
+                        // Just to make sure lines dont get drawn twice
+                        var neighboursNeighbours = this.vertices.get(neighbours[i]);
+
                         switch (i) {
                             case 0:
-                                drawLine(ctx, gridPosX + x * wallWidth, gridPosY + y * wallHeight + wallHeight, gridPosX + x * wallWidth + wallWidth, gridPosY + y * wallHeight + wallHeight);
+                                neighboursNeighbours[2] = undefined;
+                                drawLine(this.ctx, cellPosX, cellPosY + wallHeight, cellPosX + wallWidth, cellPosY + wallHeight);
                                 break;
                             case 1:
-                                drawLine(ctx, gridPosX + x * wallWidth + wallWidth, gridPosY + y * wallHeight, gridPosX + x * wallWidth + wallWidth, gridPosY + y * wallHeight + wallHeight);
+                                neighboursNeighbours[3] = undefined;
+                                drawLine(this.ctx, cellPosX + wallWidth, cellPosY, cellPosX + wallWidth, cellPosY + wallHeight);
                                 break;
                             case 2:
-                                drawLine(ctx, gridPosX + x * wallWidth, gridPosY + y * wallHeight, gridPosX + x * wallWidth + wallWidth, gridPosY + y * wallHeight);
+                                neighboursNeighbours[0] = undefined;
+                                drawLine(this.ctx, cellPosX, cellPosY, cellPosX + wallWidth, cellPosY);
                                 break;
                             case 3:
-                                drawLine(ctx, gridPosX + x * wallWidth, gridPosY + y * wallHeight, gridPosX + x * wallWidth, gridPosY + y * wallHeight + wallHeight);
+                                neighboursNeighbours[1] = undefined;
+                                drawLine(this.ctx, cellPosX, cellPosY, cellPosX, cellPosY + wallHeight);
                                 break;
                             default:
                         }
+                        neighbours[i] = undefined;
                     }
                 }
             }
-        } 
-
-        drawSquare(ctx, squarePosX, squarePosY, squareWidth, squareHeight, 'black');
-
+        }
+        drawSquare(this.ctx, this.posX, this.posY, this.pxWidth, this.pxHeight, 'black');
     }
 }
 
 class DepthFirstMaze extends Maze {
-    constructor(posX, posY, width, height, c, ctx) {
-        super(posX, posY, width, height)
-        this.c = c;
-        this.ctx = ctx;
-        // this.generateWalls();
+    constructor(posX, posY, pxWidth, pxHeight, width, height, c, ctx) {
+        super(posX, posY, pxWidth, pxHeight, width, height, c, ctx)
     }
 
     generateMaze(x, y) {
         var currentNode = this.grid[x][y];
         currentNode.visited = true;
-        console.log(currentNode);
+
         // While cell has any unvisited neighbour cells
             // Choose one of the unvisited cells randomly
             // Remove wall
@@ -197,9 +174,7 @@ class DepthFirstMaze extends Maze {
         while (neighbourDirections.length > 0) {
             var nextCellDirection = neighbourDirections[getRandomInt(0, neighbourDirections.length)];
             neighbourDirections.splice(neighbourDirections.indexOf(nextCellDirection), 1);
-
             if (neighbours[nextCellDirection].visited) continue;
-            // if (neighbours[neighbours.indexOf(nextCellDirection)].visited) continue;
 
             switch (nextCellDirection) {
                 case 0: // North wall current node == South wall neighbour node
@@ -231,18 +206,10 @@ class DepthFirstMaze extends Maze {
 main = function() {
     var c = document.querySelector('canvas');
     var ctx = c.getContext("2d");
-    // Math.seedrandom(134);
-    const maze = new DepthFirstMaze(0, 0, 40, 40, c, ctx);
-    maze.generateMaze(10, 10);
-    maze.drawMaze(c, ctx);
 
-    // var arr = [1, 2, 3, 4];
-    // while(arr.length > 0 || arr == undefined) {
-    //     console.log(num);
-    //     var nextnum = arr[getRandomInt(0, arr.length)];
-    //     arr.splice(arr.indexOf(nextnum), 1);
-    // }
-
+    const maze = new DepthFirstMaze(0, 0, 500, 500, 5, 5, c, ctx);
+    maze.generateMaze(0, 0);
+    maze.drawMaze();
 }
 
 main();
