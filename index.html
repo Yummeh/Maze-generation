@@ -16,17 +16,22 @@
                 </canvas>
                 <br>
 
-                <form class="d-flex justify-content-center">
-                    <label for="width">Width</label>
-                    <input type="range" id="width" name="width" min="0" max="100" value="20">
-                    <input type="text" id="widthInput" name="widthInput" value="20">
+                <form class="generate-maze-form d-flex justify-content-center">
+
+                    <label for="maze-width">Width</label>
+                    <input type="range" id="maze-width-range" name="maze-width-range" min="0" max="100" value="20">
+                    <input type="text" id="maze-width-input" name="maze-width-input" value="20">
+
                     <label for="height">Height</label>
-                    <input type="range" id="height" name="height" min="0" max="100" value="20">
-                    <input type="text" id="heightInput" name="heightInput" value="20"><br>
-                    <label for="seed">Seed: </label>
-                    <input type="text" id="seed" name="seed">
+                    <input type="range" id="maze-height-range" name="maze-heigth-range" min="0" max="100" value="20">
+                    <input type="text" id="maze-height-input" name="maze-height-input" value="20"><br>
+
+                    <label for="maze-seed">Seed: </label>
+                    <input type="text" id="maze-seed-input" name="seed" placeholder="Random">
                 </form>
-                <p class="generatemMaze brn btn-primary" id="generateMaze">Generate</p>
+                <div class="generate-maze-div d-flex justify-content-center">
+                    <p class="brn btn-primary rounded" id="generate-maze">Generate</p>
+                </div>
             </div>
         </div>
 

@@ -3,14 +3,45 @@ h3 {
     align-self: center;
 }
 
+#maze-width-input {
+    margin: 5px;
+}
+
+#maze-height-input {
+    margin: 5px;
+}
+
+#maze-width-range {
+    margin: 5px;
+}
+
+#maze-height-range {
+    margin: 5px;
+}
+
+
+
 #canvas {
     margin: 0 auto;
 }
 
-.generateMaze {
+#generate-maze {
+    margin: 10px;
     width: 100px;
+}
+
+#generate-maze-div {
+    
 }
 
 #myContainer {
     width: 100;
+}
+
+#generate-maze-form {
+    margin: 200px;
+}
+
+.test {
+    margin: 100px;
 }
